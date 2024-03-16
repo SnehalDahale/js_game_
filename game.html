@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Car Racing Game</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            font-family: Arial, sans-serif;
+        }
+
+        canvas {
+            display: block;
+            background-color: #3a3a3a;
+            margin: 0 auto;
+        }
+    </style>
+</head>
+<body>
+    <canvas id="gameCanvas" width="800" height="600"></canvas>
+
+    <script>
+        // Get canvas and context
+        var canvas = document.getElementById("gameCanvas");
+        var ctx = canvas.getContext("2d");
+
+        // Define car properties
+        var car = {
+            x: canvas.width / 2 - 25,
+            y: canvas.height - 100,
+            width: 50,
+            height: 90,
+            speed: 12
+        };
+
+        // Define obstacle properties
+        var obstacle = {
+            x: Math.random() * (canvas.width - 50),
+            y: -100,
+            width: 50,
+            height: 50,
+            speed: 3
+        };
+
+        // Define item properties
+        var item = {
+            x: Math.random() * (canvas.width - 50),
+            y: -100,
+            width: 50,
+            height: 50,
+            speed: 3
+        };
+
+        // Define score
+        var score = 0;
+
+        // Event listener for arrow key press
+        document.addEventListener("keydown", moveCar);
+
+        function moveCar(event) {
+            if (event.key === "ArrowLeft" && car.x > 0) {
+                car.x -= car.speed;
+            } else if (event.key === "ArrowRight" && car.x < canvas.width - car.width) {
+                car.x += car.speed;
+            }
+        }
+
+        // Main game loop
+        function gameLoop() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            // Draw car
+            ctx.fillStyle = "#ffffff";
+            ctx.fillRect(car.x, car.y, car.width, car.height);
+
+            // Move obstacle
+            obstacle.y += obstacle.speed;
+
+            // Draw obstacle
+            ctx.fillStyle = "#ff0000";
+            ctx.fillRect(obstacle.x, obstacle.y, obstacle.width, obstacle.height);
+
+            // Move item
+            item.y += item.speed;
+
+            // Draw item
+            ctx.fillStyle = "#00ff00";
+            ctx.fillRect(item.x, item.y, item.width, item.height);
+
+            // Check collision with obstacle
+            if (car.x < obstacle.x + obstacle.width &&
+                car.x + car.width > obstacle.x &&
+                car.y < obstacle.y + obstacle.height &&
+                car.y + car.height > obstacle.y) {
+                gameOver();
+            }
+
+            // Check collision with item
+            if (car.x < item.x + item.width &&
+                car.x + car.width > item.x &&
+                car.y < item.y + item.height &&
+                car.y + car.height > item.y) {
+                score++;
+                item.y = -100;
+                item.x = Math.random() * (canvas.width - 50);
+            }
+
+            // Display score
+            ctx.fillStyle = "#ffffff";
+            ctx.font = "20px Arial";
+            ctx.fillText("Score: " + score, 10, 30);
+
+            requestAnimationFrame(gameLoop);
+        }
+
+        // Game over function
+        function gameOver() {
+            alert("Game Over! Your score is: " + score);
+            window.location.reload();
+        }
+
+        gameLoop();
+    </script>
+</body>
+</html>
